@@ -1,2 +1,2 @@
 # model-regression-de-mon-master
-model regression
+des petite projets de études en model regression en 2019
