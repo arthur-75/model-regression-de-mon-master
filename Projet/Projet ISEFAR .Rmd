@@ -1,0 +1,279 @@
+---
+title: "Projet Régression linéaire multiple"
+author: Anissa Goulif - Radwan SARMINI DET SATOUF - Sirine Gabriel
+date:  March 29, 2021
+subtitle : 'Université de Paris Nanterre'
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: False
+    toc_depth: 3
+
+---
+\newpage
+
+# Jeu de données 
+
+Données bodyfat.
+
+Nous travaillons dans cette partie sur le jeu de données bodyfat, disponible sur la plateforme Cours en Ligne. Le jeu de données est tiré de la page https://online.stat.psu.edu/stat501/lesson/5/5.5 sur laquelle il est décrit ainsi : For a sample of n = 20 individuals, we have measurements of y = body fat, x1 = triceps skinfold thickness, x2= thigh circumference, and x3 = midarm circumference.
+
+```{r echo=FALSE}
+dat <- read.table("bodyfat.txt", header=T)
+fit1 <- lm(Bodyfat~Triceps+Thigh+Midarm, data=dat)
+fit0 <- lm(Bodyfat~1, data=dat)
+fit2 <- lm(Bodyfat~., data=dat)
+str(dat)
+```
+
+# Question 1
+
+L’option header=T dans l’appel R à read.table sert à dire à R que les données ont déjà des noms de columns (variables) et pas besoin d'installer des noms de columns par défaut. 
+
+# Question 2
+```{r echo=FALSE}
+pairs(dat)
+```
+
+Cette représentation graphique est un type de graphique ou de 
+diagramme mathématique utilisant des coordonnées 
+cartésiennes pour afficher les valeurs de deux variables 
+typiques d'un ensemble de données. Les données sont affichées 
+sous forme d'une collection de points, chacun ayant la valeur
+d'une variable déterminant la position sur l'axe horizontal 
+et la valeur de l'autre variable déterminant la position
+sur l'axe vertical. Cette fonction permet en fait de représenter les corrélations entre les variables 2 à 2.
+
+On voit des corrélations positives assez fortes entre :
+  
+* Triceps et Thigh
+* Triceps et Bodyfat
+* Thigh et Bodyfat
+ 
+Nous pouvons confirmer cela à l'aide du tableau donnant les corrélations :
+
+
+```{r echo=FALSE}
+cor(dat)
+````
+
+Les autres graphes représentent des points dispersés de manière insignificante.
+
+
+
+# Question 3
+
+Ces modèles statistiques correspendent à des modèles de regression lineaire.
+
+**LM** est utilisé pour ajuster des modèles linéaires. 
+Il peut être utilisé pour effectuer une régression, 
+une analyse de variance à une seule strate et 
+une analyse de covariance.
+
+* Résidus : Cette section résume les résidus, l'erreur entre la prédiction du modèle et les résultats réels. 
+
+Les résidus les plus petits sont les meilleurs.
+
+Coefficients : Pour chaque variable et l'intercept, un poids est produit et ce poids a d'autres attributs 
+comme l'erreur standard, une valeur de t-test et la signification.
+
+* Estimation : C'est le poids donné à la variable. 
+Les coefficients sont comme la suite :
+
+
+```{r echo=FALSE} 
+fit1["coefficients"]
+``` 
+
+
+```{r echo=FALSE}
+summary(fit1)
+```
+Erreur standard :  indique avec quelle précision l'estimation a été mesurée.  Elle n'est vraiment utile que pour le calcul de la valeur t.
+Valeur t et Pr(>[t]) : La valeur t est calculée en prenant le coefficient divisé par l'erreur standard. 
+Elle est ensuite utilisée pour tester si le coefficient est significativement différent de zéro ou non.  Si elle n'est pas significative, `
+le coefficient n'apporte rien au modèle et peut être abandonné ou étudié plus avant.  Pr(>|t|) est le niveau de signification.'
+
+* Mesures de performance : Trois ensembles de mesures sont fournis.
+Erreur standard résiduelle : Il s'agit de l'écart type des résidus.  Plus elle est petite,  c'est mieux.
+R-carré multiple / ajusté : Pour une seule variable, la distinction n'a pas vraiment d'importance.  Le R-carré indique la quantité de variance expliquée par le modèle. 
+Le R-carré ajusté prend en compte le nombre de variables et est plus utile pour les régressions multiples.
+
+* F-Statistique : Le test F vérifie si le poids d'au moins une variable est significativement différent de zéro.
+Il s'agit d'un test global pour aider à évaluer un modèle.  Si la valeur p n'est pas significative (par exemple, supérieure à 0,05), 
+alors votre modèle ne fait essentiellement rien.
+
+
+Les modèles fit1 et fit2 sont les mêmes, à la différence de fit2, dans le modèle fit1 les variables explicatives de la variable bodyfat sont explicitées (fit1 : on a choisi à ma main les variables et fit2 : on utilise "." pour sélectionner toutes les variables). Ce sont des modèles linéaires multiples décrivant la variable bodyfat par les autres variables des données (Triceps, Thigh, Midarm). Pour ces modèles le coefficient de détermination $R^2$ est de 0.7641. Ce coefficient est un indicateur de qualité du modèle. Ainsi avec un $R^2$ de 0.7641, les modèles fit1 et fit2 sont capables de déterminer 76,41% de la distribution des points.
+
+Formulation matricielle : 
+Ici la variable bodyfat est la variable à expliquer. Nous noterons Y le vecteur de taille 20 qui représentera la variable réponse, la matrice X de taille (20x4), les variables explicatives sont ici Triceps, Thigh et Midarm, la première colonne de X contient le vecteur de taille 20 constitué de 1 et les autres colonnes sont les valeurs de Triceps, Thigh et Midarm. Nous noterons A le vecteur de taille 4 constitué des paramètres du modèle, enfin nous noterons E le vecteur de taille 20 des résidus.
+Le modèle s'écrit donc matriciellement : 
+Y = XA + E.
+
+Le modèle fit0 est un modèle dont la variable réponse est bodyfat mais pour pour lequel il n'y a pas de variable explicative prise en compte. La seule sortie sera l'intercept. Ce n'est pas un modèle pertinant et interessant à étudier. La forme matricielle de ce modèle serait Y = X.Intercept + E, où X est un vecteur de taille 20 composé de 1, Intercept(= 20.195) le paramètre du modèle fitO et E le vecteur de taille 20 des résidus.
+
+
+# Question 4
+
+L'équation de prédiction selon fit1 est :
+$Bodyfat = 4.334*Triceps - 2.857*Thigh - 2.186 *Midarm + 117.085.$
+
+On implémente donc la fonction réalisant ces prédictions :
+
+```{r echo=FALSE}
+predictbodyfatfit1 <- function(Triceps,Thigh,Midarm){
+  prediction <- (4.334*Triceps) - (2.857*Thigh) - (2.186 *Midarm) + 117.085
+  print(prediction)
+}
+```
+
+
+# Question 5
+
+* "Residual standard error: 2.48 on ?? degrees of freedom"
+Ici la valeur manquante est 16, il s'agit du degrés de liberté. Ce dernier est donné par : (n-p), où n est le nombre d'observations (ici n=20) et p est le nombre de variables (ici p=4).
+
+* "F-statistic: 21.52 on ?? and ?? DF,  p-value: 7.343e-06"
+Les valeurs manquantes ici sont 3 et 16 qui sont les degrés de liberté pour le test de Fisher étant ((p-1),(n-p)).
+
+* la t value pour Thigh est donnée par Estimate/Std. Error de Thigh, la valeur manquante ici est donc :
+```{r echo=FALSE}
+coef(summary(fit1))["Thigh","Estimate"]/coef(summary(fit1))["Thigh","Std. Error"]
+```
+
+* Pr(>|t|) pour Triceps est donné par 2*pt(abs(t), ddl, lower.tail = FALSE), la valeur manquante est donc :
+```{r echo=FALSE}
+2*pt(abs(summary(fit1)$coefficients["Triceps","t value"]) , 16, lower.tail = FALSE)
+```
+
+# Question 6
+Pour calculer la matrice  $(X^{t}X)^{−1}$ comme sur le site : 
+
+Tout d'abord on calcule Mean standard errors avec 4 degrés de liberté vu qu'ils ont 4 variables  :
+
+```{r echo=FALSE}
+MES= sum((fit1$fitted.values-dat$Bodyfat)^2)/(length(dat$Bodyfat)-4)
+MES
+```
+
+On divise la matrice de covariance par le MSE, on trouve :
+
+```{r echo=FALSE}
+vcov(fit1)/MES
+```
+
+Voila donc la matrice $(X^{t}X)^{−1}$.
+
+# Question 7
+
+Pour recalculer les valeurs fournies dans la colonne Std. Error de l'objet fit1, on calcule, pour chaque valeur, la racine carrée de chaque coefficient correspondant dans la matrice variance covariance de fit1 (en utilisant donc la fonction vcov).
+
+```{r echo=FALSE}
+sqrt(vcov(fit1)[1,1])
+sqrt(vcov(fit1)[2,2])
+sqrt(vcov(fit1)[3,3])
+sqrt(vcov(fit1)[4,4])
+```
+
+On retrouve bien les valeurs fournies dans la colonne std. error de l'objet fit1.
+
+# Question 8
+
+Thigh semble jouer un rôle significatif car il y a un correlation positive significative entre Thigh et Bodyfat.
+
+
+```{r echo=FALSE}
+cor(dat$Thigh,dat$Bodyfat)
+```
+
+De plus si on construit un modele de regression linéaire simple entre Bodyfat et Thigh : 
+
+```{r echo=FALSE}
+fitT <- lm(Bodyfat~Thigh, data=dat)
+summary(fitT)
+```
+
+On remarque que R-squared = 0.771 donc 77.1% de données de Thigh explique Bodyfat et avec p-value << 0.05 où on est amené à rejeter l'hypothèse d'indépendance.
+
+On en conclut que la variable Thigh joue un role significatif.
+
+
+# Question 9
+
+On va tout d'abord utiliser la méthode stepwise pour voir quelles variables sont plus significatives par rapport à d'autres.
+Penchons nous en premier lieu sur la méthode ascendante de la méthode stepwise, c'est-à-dire qu'on part en premier lieu d'un modèle sans variable (ici fit0) pour y ajouter au fur et à mesure des variables qui diminuent le critère (ici l'AIC). La méthode s'arrête lorsque l'ajout d'une nouvelle variable ne diminue plus le critère (l'AIC ici).
+
+```{r echo=FALSE}
+step(fit0, scope=list(lower=fit0,upper=fit1),data=dat,direction="forward")
+```
+
+Ici on remarque donc que le modèle s'arrête après l'ajout de thigh. R considère alors que l'ajout de triceps ou de midarm va faire augmenter l'AIC (donc que ces variables vont "détériorer" le modèle car moins significative).
+
+Testons maintenant la méthode déscendante. En effet, pour cette méthode on part d'un modèle modèle complet, donc un modèle avec toutes les variables (ici fit1) et R enlève au fur et à mesure la variable qui diminue le plus le critère AIC. Le programme s'arrête lorsqu'on ne diminue plus le critère.
+
+```{r echo=FALSE}
+step(fit1, scale = 0, data=dat,direction="backward")
+```
+
+Encore une fois ici on en conclue que ni triceps ni midarm ne diminue le critère d'AIC significativement par rapport à thigh.
+
+Grace à ces deux méthodes que nous venons de réaliser, nous pouvons en conclure que triceps et midarm ne semblent pas jouer un rôle siginificatif.
+
+# Question 10
+
+## Le modèle
+
+On remarque, grace à la question précédente, que les modèle ayant le critère AIC le plus faible (donc le meilleur modèle au sens de l'AIC) sont les modèles avec uniquement Thigh comme variable (AIC = 38.71) et le modèle avec uniquement Triceps et Midarm (AIC = 39.34).
+
+Interessons-nous au deuxième modèle :
+
+```{r echo=FALSE}
+model.fiale =lm(formula = Bodyfat ~ Triceps + Midarm, data = dat)
+summary(model.fiale)
+```
+Les variables sont plutôt bien pour la P value et 76.1% de données de Triceps et Midarm explique Bodyfat avec 2.496 de residual standard error.
+
+Faisons les mêmes tests avec le premier modèle :
+
+```{r echo=FALSE}
+model.fiale2 =lm(formula = Bodyfat ~ Thigh, data = dat)
+summary(model.fiale2)
+```
+Les variables sont plutôt bien pour la P value et 75.83% de données de Thigh explique Bodyfat avec 2.51 de residual standard error. L'erreur résiduelle standard est donc plus élevée pour ce modèle là.
+
+On choisit donc de prendre le modèle avec les variables Triceps et Midarm ($R^2$ plus élevé et erreur résiduelle standard plus faible).
+
+Et pour valider notre modèle il faut que l'on teste le modèle, nous allons diviser notre jeu de données : 85% de données pour entraîner le modele et 15% pour tester le modèle.
+
+## Premier test
+
+
+```{r echo=FALSE}
+x_train=dat[-c(2,11,19),]
+fitFinal <- lm(Bodyfat~ I(Triceps)+ I(Midarm) , data=x_train)
+x_test= dat[c(2,11,19),c(1,2,3)]
+y_test= dat[c(2,11,19),4]
+prdict_mod = predict(fitFinal,x_test)
+MSE=sqrt(sum((prdict_mod- y_test)^2)/(length(dat$Bodyfat)-3))
+MSE
+```
+
+
+## Deuxieme Test
+
+```{r echo=FALSE}
+x_train= dat[-c(3,11,20),]
+fitFinal <- lm(Bodyfat~ I(Triceps)+ I(Midarm) , data=x_train)
+x_test= dat[c(3,11,20),c(1,2,3)]
+y_test= dat[c(3,11,20),4]
+prdict_mod = predict(fitFinal,x_test)
+MSE = sqrt(sum((prdict_mod- y_test)^2)/(length(dat$Bodyfat)-3))
+MSE
+```
+
+Après avoir testé et comparé plusieures combinaisons des variables pour construire le meilleur modèle, on confirme que Triceps et Midarm sont les meilleurs candidats pour exprimer Bodyfat.
